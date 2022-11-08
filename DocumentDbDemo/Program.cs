@@ -1,4 +1,8 @@
+using DocumentDbDemo.Models;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<MongoConnectionSettings>(builder.Configuration.GetSection("MongoDocumentDatabase"));
 
 // Add services to the container.
 
