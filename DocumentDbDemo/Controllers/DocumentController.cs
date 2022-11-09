@@ -1,7 +1,6 @@
 ﻿using DocumentDbDemo.Models;
+using DocumentDbDemo.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
 
 namespace DocumentDbDemo.Controllers
 {
@@ -9,30 +8,24 @@ namespace DocumentDbDemo.Controllers
     [Route("[controller]")]
     public class DocumentsController : ControllerBase
     {
-        private readonly IMongoCollection<StorageDocument> _documentCollection;
+        private readonly IDocumentService _documentService;
 
-        public DocumentsController(IOptions<MongoConnectionSettings> mongoConnectionSettings)
+        public DocumentsController(IDocumentService documentService)
         {
-            var mongoClient = new MongoClient(
-                mongoConnectionSettings.Value.ConnectionString);
-
-            var mongoDatabase = mongoClient.GetDatabase(
-                mongoConnectionSettings.Value.DatabaseName);
-
-            _documentCollection = mongoDatabase.GetCollection<StorageDocument>(
-                mongoConnectionSettings.Value.DocumentCollectionName);
+            _documentService = documentService;
         }
 
         [HttpGet]
         public async Task<IEnumerable<StorageDocument>> GetAsync()
         {
-            return await _documentCollection.Find(_ => true).ToListAsync();
+            return await _documentService.GetAsync();
         }
 
-        [HttpPost(Name = "CreateMockDocument")]
+        [HttpPost]
+        [Route("CreateMockDocument")]
         public async Task PostAsync()
         {
-            await _documentCollection.InsertOneAsync(new StorageDocument()
+            await _documentService.CreateAsync(new StorageDocument()
             {
                 Id = Guid.NewGuid().ToString(),
                 Tags = new[] { "mock", "" },
