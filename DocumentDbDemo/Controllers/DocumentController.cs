@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentDbDemo.Controllers
 {
+    /// <summary>
+    /// Controller for working with <see cref="StorageDocument"/>.
+    /// </summary>
     [ApiController]
     [Route("[controller]")]
     public class DocumentsController : ControllerBase

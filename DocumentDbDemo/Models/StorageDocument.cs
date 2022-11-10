@@ -1,5 +1,8 @@
 ﻿namespace DocumentDbDemo.Models
 {
+    /// <summary>
+    /// Base document model defined in the task description.
+    /// </summary>
     public class StorageDocument
     {
         public string Id { get; set; } = null!;
