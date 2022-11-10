@@ -66,8 +66,11 @@ namespace DocumentDbDemo.Tests
         [InlineData(2)]
         [InlineData(3)]
         [InlineData(4)]
-        public async Task GetAsync_ReturnsData_AsDataIsReceivedFromService(int testingDataIndex)
+        public async Task GetAsync_ReturnsData_AsReceivedFromService(int testingDataIndex)
         {
+            // I hope there's a better way to get the test parameters than the InlineData with indexes, but after some time I gave up finding it.
+            // I Tried MemberData, but it looked even worse.
+
             var mockData = TestingDocumentCollections[testingDataIndex];
 
             var documentServiceMock = new Mock<IDocumentService>();
