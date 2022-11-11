@@ -1,5 +1,7 @@
 using DocumentDbDemo.Models;
 using DocumentDbDemo.Services;
+using MessagePack.AspNetCoreMvcFormatter;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +9,12 @@ builder.Services.Configure<MongoConnectionSettings>(builder.Configuration.GetSec
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(c =>
+{
+    c.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
+    c.OutputFormatters.Add(new MessagePackOutputFormatter());
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
