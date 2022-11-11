@@ -8,7 +8,9 @@ namespace DocumentDbDemo.Services
     public interface IDocumentService
     {
         public Task<IEnumerable<StorageDocument>> GetAsync();
+        public Task<StorageDocument?> GetAsync(string id);
 
         public Task CreateAsync(StorageDocument newDocument);
+        public Task UpdateAsync(string id, StorageDocument updatedDocument);
     }
 }

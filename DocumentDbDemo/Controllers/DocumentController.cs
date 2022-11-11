@@ -19,26 +19,54 @@ namespace DocumentDbDemo.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<StorageDocument>))]
         public async Task<IEnumerable<StorageDocument>> GetAsync()
         {
             return await _documentService.GetAsync();
         }
 
-        [HttpPost]
-        [Route("CreateMockDocument")]
-        public async Task PostAsync()
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StorageDocument))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<StorageDocument>> GetAsync(string id)
         {
-            await _documentService.CreateAsync(new StorageDocument()
+            var document = await _documentService.GetAsync(id);
+            return document is not null ? document : NotFound();
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(StorageDocument))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> PostAsync(StorageDocument document)
+        {
+            try
             {
-                Id = Guid.NewGuid().ToString(),
-                Tags = new[] { "mock", "" },
-                Data = new StorageDocumentData()
-                {
-                    ArbitraryStringField = "aaa",
-                    ArbitraryIntField = 42,
-                    ArbitraryBoolField = true
-                }
-            });
+                await _documentService.CreateAsync(document);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            
+            var getActionName = nameof(GetAsync).Replace("Async", ""); // Async suffix is trimmed from action names by default, so this is needed for it to match
+            return CreatedAtAction(getActionName, new { id = document.Id }, document);
+        }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> PutAsync(string id, StorageDocument document)
+        {
+            try
+            {
+                await _documentService.UpdateAsync(id, document);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return NoContent();
         }
     }
 }
